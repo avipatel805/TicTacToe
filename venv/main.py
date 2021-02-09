@@ -11,9 +11,10 @@ board = [1, ' ', ' ', ' ',
 player = False
 pg.font.init()
 font = pg.font.SysFont('freesansbold.ttf', 350)
-x = font.render('X', False, (0, 0, 0))
-o = font.render('O', False, (0, 0, 0))
-
+fonttwo = pg.font.SysFont('freesansbold.ttf', 100)
+x = font.render('X', False, (0, 255, 0))
+o = font.render('O', False, (255, 0, 0))
+winnerText = fonttwo.render('Winner is ', False, (0, 0, 0))
 
 def button(mouse):
     if 0 < mouse[0] < 200:
@@ -42,24 +43,25 @@ def button(mouse):
 
 def place(num):
     if num == 7:
-        return (15, 0)
+        return 15, 0
     elif num == 8:
-        return (215, 0)
+        return 215, 0
     elif num == 9:
-        return (415, 0)
+        return 415, 0
     elif num == 4:
-        return (15, 200)
+        return 15, 200
     elif num == 5:
-        return (215, 200)
+        return 215, 200
     elif num == 6:
-        return (415, 200)
+        return 415, 200
     elif num == 1:
-        return (15, 400)
+        return 15, 400
     elif num == 2:
-        return (215, 400)
+        return 215, 400
     elif num == 3:
-        return (415, 400)
-    return (-500, -500)
+        return 415, 400
+    return -500, -500
+
 
 '''
 def drawBoard(bo):
@@ -72,7 +74,7 @@ pg.draw.line(screen, (0, 0, 0), (200, 0), (200, 600))
 pg.draw.line(screen, (0, 0, 0), (400, 0), (400, 600))
 pg.draw.line(screen, (0, 0, 0), (0, 200), (600, 200))
 pg.draw.line(screen, (0, 0, 0), (0, 400), (600, 400))
-#pg.draw.rect(screen, (0, 255, 255), (0, 0, 200, 200))
+# pg.draw.rect(screen, (0, 255, 255), (0, 0, 200, 200))
 
 click = 1
 state = 'player1'
@@ -92,24 +94,33 @@ while running:
         screen.blit(x, place(button(mouse)))
         state = 'player2'
         board[button(mouse)] = 'X'
-    elif state == 'player2' and mouse != (0, 0) and board[button(mouse)] == ' ':
-        screen.blit(o, place(button(mouse)))
+    elif state == 'player2':
+        screen.blit(o, place(endgame.compMove(board)))
+        board[endgame.compMove(board)] = 'O'
         state = 'player1'
-        board[button(mouse)] = 'O'
-    if endgame.Winner(board, 'X'):
+        #board[button(mouse)] = 'O'
+    if endgame.winner(board, 'X'):
         winner = 'X'
         running = False
-    elif endgame.Winner(board, 'O'):
+    elif endgame.winner(board, 'O'):
         winner = 'O'
         running = False
     elif endgame.boardFull(board):
         winner = 'cat'
         running = False
     pg.display.update()
-print(winner)
-print(board)
+if winner == '':
+    winner = 'incomplete'
+screen.fill((255, 255, 255))
+actualWinner = fonttwo.render(winner, False, (0,0,0))
+#text_rect = actualWinner.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+#screen.blit(text, text_rect)
+screen.blit(winnerText, (100, 250))
+screen.blit(actualWinner, (295, 300))
+pg.display.update()
+running = True
+while running:
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
+            running = False
 pg.quit()
-
-
-
-
